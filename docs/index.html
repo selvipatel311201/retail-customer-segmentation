@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail Customer Segmentation &amp; Lifetime Value — Selvi Patel</title>
+<meta name="description" content="Segmentation, churn and lifetime value analysis over 1.07M retail transactions. RFM scoring, K-Means clustering and costed retention recommendations.">
+<style>
+  :root {
+    --ink:#15171a; --muted:#6b7280; --line:#e5e7eb; --bg:#ffffff;
+    --accent:#1d4ed8; --accent-soft:#dbeafe; --good:#047857;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8eaed; --muted:#9aa0a6; --line:#2c3034; --bg:#121416;
+             --accent:#7aa2f7; --accent-soft:#1b2740; --good:#4ade80; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:960px; margin:0 auto; padding:56px 24px 80px; }
+  header { border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:40px; }
+  h1 { font-size:clamp(28px,4.5vw,40px); line-height:1.15; margin:0 0 10px;
+        letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin:0 0 18px; font-size:17px; }
+  .links a { display:inline-block; margin-right:14px; color:var(--accent);
+    text-decoration:none; font-weight:500; border-bottom:1px solid transparent; }
+  .links a:hover { border-bottom-color:var(--accent); }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.09em;
+        color:var(--muted); margin:46px 0 16px; font-weight:600; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px; }
+  .kpi { border:1px solid var(--line); border-radius:10px; padding:18px 16px; }
+  .kpi b { display:block; font-size:27px; letter-spacing:-.02em; margin-bottom:3px; }
+  .kpi span { color:var(--muted); font-size:13px; }
+  .lead { font-size:19px; line-height:1.6; border-left:3px solid var(--accent);
+    padding-left:18px; margin:30px 0; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; }
+  th { text-align:left; font-weight:600; color:var(--muted); font-size:12px;
+    text-transform:uppercase; letter-spacing:.05em; padding:0 10px 9px;
+    border-bottom:1px solid var(--line); }
+  td { padding:11px 10px; border-bottom:1px solid var(--line); }
+  .num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .strong { font-weight:650; }
+  .seg { font-weight:550; }
+  .bar-cell { position:relative; min-width:190px; }
+  .bar { position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    height:19px; background:var(--accent-soft); border-radius:3px; z-index:0; }
+  .bar-cell span { position:relative; z-index:1; font-variant-numeric:tabular-nums; }
+  .scroll { overflow-x:auto; }
+  .heat { text-align:center; padding:7px 4px; font-size:12.5px;
+    font-variant-numeric:tabular-nums;
+    background:color-mix(in srgb, var(--accent) calc(var(--a)*55%), transparent); }
+  .heat.empty { background:none; }
+  .rec { display:flex; gap:18px; padding:22px 0; border-bottom:1px solid var(--line); }
+  .rec-n { flex:0 0 30px; height:30px; border-radius:50%; background:var(--accent-soft);
+    color:var(--accent); display:grid; place-items:center; font-weight:650; font-size:14px; }
+  .rec h3 { margin:2px 0 8px; font-size:17px; }
+  .rec p { margin:0 0 8px; }
+  .action { color:var(--muted); }
+  .val { color:var(--good); font-weight:650; font-size:17px; }
+  .val span { color:var(--muted); font-weight:400; font-size:13px; }
+  .note { background:color-mix(in srgb, var(--accent) 6%, transparent);
+    border-radius:10px; padding:18px 20px; font-size:14.5px; }
+  .note p { margin:0 0 10px; } .note p:last-child { margin:0; }
+  footer { margin-top:56px; padding-top:22px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Retail Customer Segmentation &amp; Lifetime Value</h1>
+  <p class="sub">776,827 cleaned transactions · 5,853 customers ·
+     2009-12-01 to 2011-12-09</p>
+  <div class="links">
+    <a href="https://retail-customer.streamlit.app">Interactive dashboard →</a>
+    <a href="https://github.com/selvipatel311201/retail-customer-segmentation">Source code →</a>
+    <a href="https://selvipatel.com">Selvi Patel →</a>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><b>5,853</b><span>Customers</span></div>
+  <div class="kpi"><b>£17.1M</b><span>Revenue analysed</span></div>
+  <div class="kpi"><b>77%</b><span>Revenue from top 20%</span></div>
+  <div class="kpi"><b>41%</b><span>Churned (180 days)</span></div>
+</div>
+
+<p class="lead">Twenty percent of customers generate 77.2% of revenue,
+and of everyone who buys once, only 9.5% are still buying a year
+later. The business is carried by a small group it cannot afford to lose.</p>
+
+<h2>Segments</h2>
+<div class="scroll"><table>
+  <tr><th>Segment</th><th class="num">Customers</th><th class="num">% of base</th>
+      <th>Revenue</th><th class="num">% of revenue</th><th class="num">Churned</th></tr>
+  
+        <tr>
+          <td class="seg">Champions</td>
+          <td class="num">1,476</td>
+          <td class="num">25.2%</td>
+          <td class="bar-cell"><div class="bar" style="width:100.0%"></div>
+              <span>£11,826,035</span></td>
+          <td class="num strong">69.2%</td>
+          <td class="num">0%</td>
+        </tr>
+        <tr>
+          <td class="seg">Loyal</td>
+          <td class="num">1,207</td>
+          <td class="num">20.6%</td>
+          <td class="bar-cell"><div class="bar" style="width:20.5%"></div>
+              <span>£2,422,417</span></td>
+          <td class="num strong">14.2%</td>
+          <td class="num">2%</td>
+        </tr>
+        <tr>
+          <td class="seg">Can't Lose Them</td>
+          <td class="num">358</td>
+          <td class="num">6.1%</td>
+          <td class="bar-cell"><div class="bar" style="width:8.7%"></div>
+              <span>£1,034,451</span></td>
+          <td class="num strong">6.1%</td>
+          <td class="num">100%</td>
+        </tr>
+        <tr>
+          <td class="seg">Hibernating / Lost</td>
+          <td class="num">1,508</td>
+          <td class="num">25.8%</td>
+          <td class="bar-cell"><div class="bar" style="width:5.2%"></div>
+              <span>£620,117</span></td>
+          <td class="num strong">3.6%</td>
+          <td class="num">100%</td>
+        </tr>
+        <tr>
+          <td class="seg">At Risk</td>
+          <td class="num">471</td>
+          <td class="num">8.0%</td>
+          <td class="bar-cell"><div class="bar" style="width:4.7%"></div>
+              <span>£560,087</span></td>
+          <td class="num strong">3.3%</td>
+          <td class="num">100%</td>
+        </tr>
+        <tr>
+          <td class="seg">New / Promising</td>
+          <td class="num">451</td>
+          <td class="num">7.7%</td>
+          <td class="bar-cell"><div class="bar" style="width:3.5%"></div>
+              <span>£416,565</span></td>
+          <td class="num strong">2.4%</td>
+          <td class="num">0%</td>
+        </tr>
+        <tr>
+          <td class="seg">Needs Attention</td>
+          <td class="num">382</td>
+          <td class="num">6.5%</td>
+          <td class="bar-cell"><div class="bar" style="width:1.7%"></div>
+              <span>£201,457</span></td>
+          <td class="num strong">1.2%</td>
+          <td class="num">4%</td>
+        </tr>
+</table></div>
+
+<h2>K-Means clusters</h2>
+<p>Run independently of the rule-based segments above, on log-scaled recency, frequency
+and monetary value. <em>k</em> was chosen by the elbow method — silhouette scoring peaked at
+k=2, which splits customers into active and inactive: true, but nothing a team can act on.</p>
+<div class="scroll"><table>
+  <tr><th>Cluster</th><th class="num">Customers</th><th class="num">Median recency</th>
+      <th class="num">Median orders</th><th class="num">Median spend</th>
+      <th class="num">% of revenue</th></tr>
+  
+        <tr>
+          <td class="seg">VIPs</td>
+          <td class="num">1,179</td>
+          <td class="num">16 days</td>
+          <td class="num">13</td>
+          <td class="num">£4,910</td>
+          <td class="num strong">73.3%</td>
+        </tr>
+        <tr>
+          <td class="seg">Lapsing regulars</td>
+          <td class="num">1,456</td>
+          <td class="num">182 days</td>
+          <td class="num">5</td>
+          <td class="num">£1,460</td>
+          <td class="num strong">16.9%</td>
+        </tr>
+        <tr>
+          <td class="seg">Active light buyers</td>
+          <td class="num">1,246</td>
+          <td class="num">24 days</td>
+          <td class="num">3</td>
+          <td class="num">£720</td>
+          <td class="num strong">6.1%</td>
+        </tr>
+        <tr>
+          <td class="seg">One-and-done</td>
+          <td class="num">1,972</td>
+          <td class="num">401 days</td>
+          <td class="num">1</td>
+          <td class="num">£278</td>
+          <td class="num strong">3.7%</td>
+        </tr>
+</table></div>
+
+<h2>Cohort retention</h2>
+<p>Each row is a month's new customers; each column is months since their first purchase.
+Retention falls from 20.1% at month one to
+9.5% at month twelve.</p>
+<div class="scroll"><table><tr><th>Cohort</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th></tr><tr><th>2009-12</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.78">35</td><td class="heat" style="--a:0.74">33</td><td class="heat" style="--a:0.94">42</td><td class="heat" style="--a:0.84">38</td><td class="heat" style="--a:0.80">36</td><td class="heat" style="--a:0.84">38</td><td class="heat" style="--a:0.76">34</td><td class="heat" style="--a:0.75">34</td><td class="heat" style="--a:0.80">36</td><td class="heat" style="--a:0.94">42</td><td class="heat" style="--a:1.00">50</td></tr><tr><th>2010-01</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.48">21</td><td class="heat" style="--a:0.71">32</td><td class="heat" style="--a:0.70">32</td><td class="heat" style="--a:0.60">27</td><td class="heat" style="--a:0.69">31</td><td class="heat" style="--a:0.60">27</td><td class="heat" style="--a:0.52">23</td><td class="heat" style="--a:0.63">29</td><td class="heat" style="--a:0.72">33</td><td class="heat" style="--a:0.69">31</td><td class="heat" style="--a:0.40">18</td></tr><tr><th>2010-02</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.52">23</td><td class="heat" style="--a:0.50">23</td><td class="heat" style="--a:0.65">29</td><td class="heat" style="--a:0.55">25</td><td class="heat" style="--a:0.44">20</td><td class="heat" style="--a:0.43">19</td><td class="heat" style="--a:0.64">29</td><td class="heat" style="--a:0.57">26</td><td class="heat" style="--a:0.62">28</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.28">13</td></tr><tr><th>2010-03</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.42">19</td><td class="heat" style="--a:0.51">23</td><td class="heat" style="--a:0.54">24</td><td class="heat" style="--a:0.51">23</td><td class="heat" style="--a:0.45">20</td><td class="heat" style="--a:0.55">25</td><td class="heat" style="--a:0.68">31</td><td class="heat" style="--a:0.61">28</td><td class="heat" style="--a:0.24">11</td><td class="heat" style="--a:0.26">12</td><td class="heat" style="--a:0.32">15</td></tr><tr><th>2010-04</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.42">19</td><td class="heat" style="--a:0.42">19</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.41">18</td><td class="heat" style="--a:0.49">22</td><td class="heat" style="--a:0.61">28</td><td class="heat" style="--a:0.59">27</td><td class="heat" style="--a:0.23">11</td><td class="heat" style="--a:0.24">11</td><td class="heat" style="--a:0.17">7</td><td class="heat" style="--a:0.31">14</td></tr><tr><th>2010-05</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.35">16</td><td class="heat" style="--a:0.37">17</td><td class="heat" style="--a:0.39">18</td><td class="heat" style="--a:0.39">18</td><td class="heat" style="--a:0.57">25</td><td class="heat" style="--a:0.47">21</td><td class="heat" style="--a:0.28">13</td><td class="heat" style="--a:0.13">6</td><td class="heat" style="--a:0.18">8</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.30">13</td></tr><tr><th>2010-06</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.39">18</td><td class="heat" style="--a:0.42">19</td><td class="heat" style="--a:0.46">21</td><td class="heat" style="--a:0.52">23</td><td class="heat" style="--a:0.63">28</td><td class="heat" style="--a:0.28">13</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.18">8</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.23">10</td><td class="heat" style="--a:0.31">14</td></tr><tr><th>2010-07</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.35">16</td><td class="heat" style="--a:0.41">18</td><td class="heat" style="--a:0.66">30</td><td class="heat" style="--a:0.65">29</td><td class="heat" style="--a:0.31">14</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.32">15</td><td class="heat" style="--a:0.32">15</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.30">13</td><td class="heat" style="--a:0.32">15</td></tr><tr><th>2010-08</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.44">20</td><td class="heat" style="--a:0.64">29</td><td class="heat" style="--a:0.72">33</td><td class="heat" style="--a:0.37">17</td><td class="heat" style="--a:0.26">12</td><td class="heat" style="--a:0.22">10</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.30">14</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.26">12</td></tr><tr><th>2010-09</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.51">23</td><td class="heat" style="--a:0.52">23</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.23">10</td><td class="heat" style="--a:0.31">14</td><td class="heat" style="--a:0.21">10</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.27">12</td><td class="heat" style="--a:0.22">10</td></tr><tr><th>2010-10</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.57">26</td><td class="heat" style="--a:0.33">15</td><td class="heat" style="--a:0.28">13</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.18">8</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.31">14</td><td class="heat" style="--a:0.24">11</td><td class="heat" style="--a:0.21">9</td><td class="heat" style="--a:0.24">11</td><td class="heat" style="--a:0.28">13</td></tr><tr><th>2010-11</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.39">17</td><td class="heat" style="--a:0.21">10</td><td class="heat" style="--a:0.21">10</td><td class="heat" style="--a:0.17">8</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.29">13</td><td class="heat" style="--a:0.22">10</td><td class="heat" style="--a:0.19">9</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.33">15</td></tr><tr><th>2010-12</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.12">5</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.26">12</td><td class="heat" style="--a:0.15">7</td><td class="heat" style="--a:0.12">5</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.12">5</td><td class="heat" style="--a:0.06">3</td><td class="heat" style="--a:0.20">9</td><td class="heat" style="--a:0.44">20</td></tr><tr><th>2011-01</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.37">17</td><td class="heat" style="--a:0.49">22</td><td class="heat" style="--a:0.43">19</td><td class="heat" style="--a:0.49">22</td><td class="heat" style="--a:0.34">15</td><td class="heat" style="--a:0.34">15</td><td class="heat" style="--a:0.28">12</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.46">21</td><td class="heat" style="--a:0.56">25</td><td class="heat" style="--a:0.25">11</td></tr><tr><th>2011-02</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.41">18</td><td class="heat" style="--a:0.48">22</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.34">15</td><td class="heat" style="--a:0.34">15</td><td class="heat" style="--a:0.41">18</td><td class="heat" style="--a:0.14">6</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-03</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.40">18</td><td class="heat" style="--a:0.48">22</td><td class="heat" style="--a:0.45">20</td><td class="heat" style="--a:0.50">22</td><td class="heat" style="--a:0.34">15</td><td class="heat" style="--a:0.46">21</td><td class="heat" style="--a:0.45">20</td><td class="heat" style="--a:0.53">24</td><td class="heat" style="--a:0.21">10</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-04</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.55">25</td><td class="heat" style="--a:0.44">20</td><td class="heat" style="--a:0.44">20</td><td class="heat" style="--a:0.40">18</td><td class="heat" style="--a:0.52">24</td><td class="heat" style="--a:0.40">18</td><td class="heat" style="--a:0.57">25</td><td class="heat" style="--a:0.25">11</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-05</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.52">23</td><td class="heat" style="--a:0.54">24</td><td class="heat" style="--a:0.36">16</td><td class="heat" style="--a:0.48">22</td><td class="heat" style="--a:0.46">21</td><td class="heat" style="--a:0.58">26</td><td class="heat" style="--a:0.26">12</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-06</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.51">23</td><td class="heat" style="--a:0.47">21</td><td class="heat" style="--a:0.60">27</td><td class="heat" style="--a:0.45">20</td><td class="heat" style="--a:0.62">28</td><td class="heat" style="--a:0.19">8</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-07</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.46">21</td><td class="heat" style="--a:0.66">30</td><td class="heat" style="--a:0.62">28</td><td class="heat" style="--a:0.77">35</td><td class="heat" style="--a:0.35">16</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-08</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.58">26</td><td class="heat" style="--a:0.66">30</td><td class="heat" style="--a:0.58">26</td><td class="heat" style="--a:0.37">17</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-09</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.60">27</td><td class="heat" style="--a:0.84">38</td><td class="heat" style="--a:0.33">15</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-10</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.70">32</td><td class="heat" style="--a:0.35">16</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-11</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.31">14</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr><tr><th>2011-12</th><td class="heat" style="--a:1.00">100</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td><td class="heat" style="--a:0.00">0</td></tr></table></div>
+
+<h2>Recommendations</h2>
+
+        <div class="rec">
+          <div class="rec-n">1</div>
+          <div>
+            <h3>Win back 'Can't Lose Them' before they are gone for good</h3>
+            <p>358 customers (6.1% of the base) have bought 6 times on average but have not ordered in 338 days. They carry GBP 1,034,451 of historical revenue (6.1% of the total).</p>
+            <p class="action"><strong>Action.</strong> Targeted win-back offer, sequenced email plus phone for the top decile.</p>
+            <p class="val">£37,240 <span>gross margin — 12% response, 30% gross margin</span></p>
+          </div>
+        </div>
+        <div class="rec">
+          <div class="rec-n">2</div>
+          <div>
+            <h3>Protect Champions: the revenue base is dangerously concentrated</h3>
+            <p>1,476 customers (25.2%) generate GBP 11,826,035 — 69.2% of all revenue. Losing just 5% of them costs GBP 591,302 in revenue.</p>
+            <p class="action"><strong>Action.</strong> Named account care for the top 200, early-warning alert when a Champion's gap between orders exceeds twice their own norm.</p>
+            <p class="val">£177,391 <span>gross margin — Protecting 5% of Champion revenue at 30% margin</span></p>
+          </div>
+        </div>
+        <div class="rec">
+          <div class="rec-n">3</div>
+          <div>
+            <h3>Convert one-time buyers to a second purchase</h3>
+            <p>1,619 customers (27.7%) ordered exactly once, at a median of GBP 229. They account for only 3.3% of revenue — the single largest untapped group.</p>
+            <p class="action"><strong>Action.</strong> Post-purchase onboarding sequence with a second-order incentive, triggered 30 days after first delivery.</p>
+            <p class="val">£5,560 <span>gross margin — 5% conversion to a second order at median AOV</span></p>
+          </div>
+        </div>
+<p class="val" style="margin-top:22px;font-size:19px">
+  £220,191 <span>total identified gross margin</span></p>
+
+<h2>Method &amp; limitations</h2>
+<div class="note">
+  <p><strong>Cleaning.</strong> 1,067,371 raw rows reduced to
+  776,827 (27.2% dropped): cancelled invoices, non-product
+  lines such as postage and bank charges, exact duplicates, and
+  243,007 rows with no customer ID.</p>
+  <p><strong>Known bias.</strong> Those missing-ID rows are guest checkouts — real sales that
+  cannot be attributed to a person. They skew toward one-time buyers, so every segment here
+  over-represents repeat customers. Stated rather than hidden.</p>
+  <p><strong>Lifetime value.</strong> AOV × orders per year × 30% assumed gross margin, where
+  orders per year is measured over how long each customer has been observed, not over their
+  active span — dividing by active span sends one-time buyers to infinity.</p>
+  <p><strong>Churn.</strong> Defined as no purchase within 180 days of the snapshot date.</p>
+</div>
+
+<footer>
+  Built by <a href="https://selvipatel.com" style="color:var(--accent)">Selvi Patel</a> ·
+  Python, Pandas, Scikit-Learn, SQL, Power BI, Streamlit ·
+  Data: <a href="https://archive.ics.uci.edu/dataset/502/online+retail+ii"
+  style="color:var(--accent)">Online Retail II</a>, UCI Machine Learning Repository
+</footer>
+
+</div>
+</body>
+</html>
