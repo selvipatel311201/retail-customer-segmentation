@@ -1,0 +1,32 @@
+{
+  "retention": {
+    "month_1": 20.1,
+    "month_3": 19.1,
+    "month_6": 13.6,
+    "month_12": 9.5
+  },
+  "recommendations": [
+    {
+      "title": "Win back 'Can't Lose Them' before they are gone for good",
+      "finding": "358 customers (6.1% of the base) have bought 6 times on average but have not ordered in 338 days. They carry GBP 1,034,451 of historical revenue (6.1% of the total).",
+      "action": "Targeted win-back offer, sequenced email plus phone for the top decile.",
+      "value_gbp": 37240.0,
+      "assumption": "12% response, 30% gross margin"
+    },
+    {
+      "title": "Protect Champions: the revenue base is dangerously concentrated",
+      "finding": "1,476 customers (25.2%) generate GBP 11,826,035 \u2014 69.2% of all revenue. Losing just 5% of them costs GBP 591,302 in revenue.",
+      "action": "Named account care for the top 200, early-warning alert when a Champion's gap between orders exceeds twice their own norm.",
+      "value_gbp": 177391.0,
+      "assumption": "Protecting 5% of Champion revenue at 30% margin"
+    },
+    {
+      "title": "Convert one-time buyers to a second purchase",
+      "finding": "1,619 customers (27.7%) ordered exactly once, at a median of GBP 229. They account for only 3.3% of revenue \u2014 the single largest untapped group.",
+      "action": "Post-purchase onboarding sequence with a second-order incentive, triggered 30 days after first delivery.",
+      "value_gbp": 5560.0,
+      "assumption": "5% conversion to a second order at median AOV"
+    }
+  ],
+  "total_opportunity_gbp": 220191.0
+}

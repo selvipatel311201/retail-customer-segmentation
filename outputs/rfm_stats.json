@@ -1,0 +1,113 @@
+{
+  "customers": 5853,
+  "total_revenue": 17081128.72,
+  "snapshot_date": "2011-12-10",
+  "churn_days": 180,
+  "margin_assumption": 0.3,
+  "best_k": 4,
+  "elbow": [
+    {
+      "k": 2,
+      "inertia": 8562.9,
+      "silhouette": 0.438
+    },
+    {
+      "k": 3,
+      "inertia": 6338.1,
+      "silhouette": 0.347
+    },
+    {
+      "k": 4,
+      "inertia": 4907.9,
+      "silhouette": 0.365
+    },
+    {
+      "k": 5,
+      "inertia": 4090.0,
+      "silhouette": 0.343
+    },
+    {
+      "k": 6,
+      "inertia": 3549.3,
+      "silhouette": 0.335
+    },
+    {
+      "k": 7,
+      "inertia": 3183.0,
+      "silhouette": 0.308
+    },
+    {
+      "k": 8,
+      "inertia": 2892.3,
+      "silhouette": 0.295
+    }
+  ],
+  "overall_churn_rate": 0.407,
+  "median_aov": 277.94,
+  "top20pct_revenue_share": 77.2,
+  "segments": [
+    {
+      "Segment": "Champions",
+      "customers": 1476,
+      "revenue": 11826035.25,
+      "avg_clv": 1558.9031842818,
+      "churn_rate": 0.0,
+      "pct_customers": 25.2,
+      "pct_revenue": 69.2
+    },
+    {
+      "Segment": "Loyal",
+      "customers": 1207,
+      "revenue": 2422417.14,
+      "avg_clv": 635.8904059652,
+      "churn_rate": 0.024026512,
+      "pct_customers": 20.6,
+      "pct_revenue": 14.2
+    },
+    {
+      "Segment": "Can't Lose Them",
+      "customers": 358,
+      "revenue": 1034450.91,
+      "avg_clv": 475.6396089385,
+      "churn_rate": 1.0,
+      "pct_customers": 6.1,
+      "pct_revenue": 6.1
+    },
+    {
+      "Segment": "Hibernating / Lost",
+      "customers": 1508,
+      "revenue": 620116.9400000001,
+      "avg_clv": 101.4706830239,
+      "churn_rate": 1.0,
+      "pct_customers": 25.8,
+      "pct_revenue": 3.6
+    },
+    {
+      "Segment": "At Risk",
+      "customers": 471,
+      "revenue": 560087.16,
+      "avg_clv": 239.0335881104,
+      "churn_rate": 1.0,
+      "pct_customers": 8.0,
+      "pct_revenue": 3.3
+    },
+    {
+      "Segment": "New / Promising",
+      "customers": 451,
+      "revenue": 416564.78,
+      "avg_clv": 1179.6356984479,
+      "churn_rate": 0.0,
+      "pct_customers": 7.7,
+      "pct_revenue": 2.4
+    },
+    {
+      "Segment": "Needs Attention",
+      "customers": 382,
+      "revenue": 201456.54,
+      "avg_clv": 431.4493717277,
+      "churn_rate": 0.0392670157,
+      "pct_customers": 6.5,
+      "pct_revenue": 1.2
+    }
+  ]
+}

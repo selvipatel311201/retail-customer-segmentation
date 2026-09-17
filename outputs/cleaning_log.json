@@ -1,0 +1,45 @@
+{
+  "raw_rows": 1067371,
+  "clean_rows": 776827,
+  "rows_dropped": 290544,
+  "pct_dropped": 27.2,
+  "customers": 5853,
+  "orders": 36600,
+  "products": 4621,
+  "countries": 41,
+  "revenue_total": 17081128.72,
+  "date_min": "2009-12-01",
+  "date_max": "2011-12-09",
+  "steps": [
+    {
+      "reason": "no CustomerID (guest checkout, unattributable)",
+      "rows_dropped": 243007,
+      "rows_remaining": 824364
+    },
+    {
+      "reason": "cancelled invoice (Invoice starts with 'C')",
+      "rows_dropped": 18744,
+      "rows_remaining": 805620
+    },
+    {
+      "reason": "non-positive quantity (returns/adjustments)",
+      "rows_dropped": 0,
+      "rows_remaining": 805620
+    },
+    {
+      "reason": "non-positive price (free items/adjustments)",
+      "rows_dropped": 71,
+      "rows_remaining": 805549
+    },
+    {
+      "reason": "non-product line (postage, fees, manual adjustments)",
+      "rows_dropped": 2662,
+      "rows_remaining": 802887
+    },
+    {
+      "reason": "exact duplicate row",
+      "rows_dropped": 26060,
+      "rows_remaining": 776827
+    }
+  ]
+}
