@@ -16,11 +16,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs"
 
+# The published Tableau Public viz. Kept here rather than inline because
+# republishing under a new name changes the URL, and this is the one place
+# that has to be edited when it does.
+TABLEAU = ("https://public.tableau.com/app/profile/selvi.patel/viz/"
+           "retail_17897602838350/RetailCustomerSegmentationLifetimeValue")
+GITHUB = "https://github.com/selvipatel311201/retail-customer-segmentation"
+
 stats = json.loads((ROOT / "outputs" / "rfm_stats.json").read_text())
 findings = json.loads((ROOT / "outputs" / "findings.json").read_text())
 clean = json.loads((ROOT / "outputs" / "cleaning_log.json").read_text())
 
 segments = stats["segments"]
+
+# The two segments the Tableau contact list is filtered to: high historical
+# value, no recent order. Counted rather than hardcoded so the prose on the
+# page cannot drift away from the dashboard it describes.
+LAPSED = ("At Risk", "Can't Lose Them")
+lapsed_customers = sum(s["customers"] for s in segments if s["Segment"] in LAPSED)
+
 retention_rows = list(csv.reader((ROOT / "outputs" / "cohort_retention.csv").open()))
 head, *body = retention_rows
 
@@ -186,8 +200,8 @@ HTML = f"""<!doctype html>
   <p class="sub">{clean['clean_rows']:,} cleaned transactions · {stats['customers']:,} customers ·
      {clean['date_min']} to {clean['date_max']}</p>
   <div class="links">
-    <a href="https://retail-customer.streamlit.app">Interactive dashboard →</a>
-    <a href="https://github.com/selvipatel311201/retail-customer-segmentation">Source code →</a>
+    <a href="{TABLEAU}">Tableau dashboard →</a>
+    <a href="{GITHUB}">Source code →</a>
     <a href="https://selvipatel.com">Selvi Patel →</a>
   </div>
 </header>
@@ -202,6 +216,18 @@ HTML = f"""<!doctype html>
 <p class="lead">Twenty percent of customers generate {stats['top20pct_revenue_share']:.1f}% of revenue,
 and of everyone who buys once, only {findings['retention']['month_12']:.1f}% are still buying a year
 later. The business is carried by a small group it cannot afford to lose.</p>
+
+<h2>Interactive dashboard</h2>
+<p>The same analysis published to Tableau Public: revenue and customer counts by segment, the
+cluster scatter, and a ranked contact list of the {lapsed_customers:,} high-value
+customers who have stopped buying.
+<a href="{TABLEAU}" style="color:var(--accent)">Open it full size →</a></p>
+<div class="scroll" style="border:1px solid var(--line); border-radius:8px">
+  <iframe src="{TABLEAU}?:showVizHome=no&amp;:embed=y&amp;:toolbar=no"
+    title="Retail customer segmentation dashboard on Tableau Public"
+    width="1360" height="1000" loading="lazy"
+    style="border:0; display:block"></iframe>
+</div>
 
 <h2>Segments</h2>
 <div class="scroll"><table>
@@ -249,7 +275,7 @@ Retention falls from {findings['retention']['month_1']:.1f}% at month one to
 
 <footer>
   Built by <a href="https://selvipatel.com" style="color:var(--accent)">Selvi Patel</a> ·
-  Python, Pandas, Scikit-Learn, SQL, Power BI, Streamlit ·
+  Python, Pandas, Scikit-Learn, SQL, Tableau ·
   Data: <a href="https://archive.ics.uci.edu/dataset/502/online+retail+ii"
   style="color:var(--accent)">Online Retail II</a>, UCI Machine Learning Repository
 </footer>
