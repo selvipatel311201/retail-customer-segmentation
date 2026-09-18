@@ -24,6 +24,9 @@ OUT = ROOT / "docs"
 TABLEAU = ("https://public.tableau.com/app/profile/selvi.patel/viz/"
            "retail_17897602838350/RetailCustomerSegmentationLifetimeValue")
 GITHUB = "https://github.com/selvipatel311201/retail-customer-segmentation"
+# The packaged workbook, served from this site so anyone with Tableau can open
+# the real thing rather than only the published render.
+WORKBOOK = "retail-customer-segmentation.twbx"
 
 stats = json.loads((ROOT / "outputs" / "rfm_stats.json").read_text())
 findings = json.loads((ROOT / "outputs" / "findings.json").read_text())
@@ -40,7 +43,7 @@ lapsed_customers = sum(s["customers"] for s in segments if s["Segment"] in LAPSE
 retention_rows = list(csv.reader((ROOT / "outputs" / "cohort_retention.csv").open()))
 head, *body = retention_rows
 
-clusters, spend = {}, []
+clusters, spend, lapsed = {}, [], []
 with (ROOT / "data" / "customers.csv").open() as fh:
     for r in csv.DictReader(fh):
         c = clusters.setdefault(int(r["Cluster"]),
@@ -48,6 +51,9 @@ with (ROOT / "data" / "customers.csv").open() as fh:
         c["R"].append(float(r["Recency"])); c["F"].append(float(r["Frequency"]))
         c["M"].append(float(r["Monetary"])); c["n"] += 1; c["rev"] += float(r["Monetary"])
         spend.append(float(r["Monetary"]))
+        if r["Segment"] in LAPSED:
+            lapsed.append(r)
+lapsed.sort(key=lambda r: -float(r["Monetary"]))
 
 total_rev = sum(c["rev"] for c in clusters.values())
 cluster_rows = sorted(
@@ -203,6 +209,26 @@ def clusters_html():
           <td class="num dim">{c['F']:.0f}</td>
           <td class="num">£{c['M']:,.0f}</td>
           <td class="num strong">{c['share']:.1f}%</td>
+        </tr>""")
+    return "".join(out)
+
+
+CONTACT_N = 25
+
+
+def contacts_html():
+    """The top of the call list: highest historical spend, no recent order."""
+    out = []
+    for r in lapsed[:CONTACT_N]:
+        out.append(f"""
+        <tr>
+          <td class="seg">{r['CustomerID']}</td>
+          <td>{r['Segment']}</td>
+          <td class="dim">{r['Country']}</td>
+          <td class="num dim">{int(float(r['Recency']))} days</td>
+          <td class="num dim">{int(float(r['Frequency']))}</td>
+          <td class="num strong">£{float(r['Monetary']):,.0f}</td>
+          <td class="num">£{float(r['CLV_1yr']):,.0f}</td>
         </tr>""")
     return "".join(out)
 
@@ -445,6 +471,7 @@ HTML = f"""<!doctype html>
     <span class="mark">Retail Segmentation</span>
     <a href="#dashboard" class="hide-sm">Dashboard</a>
     <a href="#segments" class="hide-sm">Segments</a>
+    <a href="#contacts" class="hide-sm">Contacts</a>
     <a href="#retention" class="hide-sm">Retention</a>
     <a href="#actions" class="hide-sm">Actions</a>
     <a href="#method" class="hide-sm">Method</a>
@@ -502,12 +529,30 @@ HTML = f"""<!doctype html>
   <h2>Interactive dashboard</h2>
   <p class="say">The same analysis published to Tableau Public: revenue and customer counts by
   segment, the cluster scatter, and a ranked contact list of the {lapsed_customers:,} high-value
-  customers who have stopped buying. <a href="{TABLEAU}">Open it full size ↗</a></p>
+  customers who have stopped buying.</p>
+  <div class="cta" style="margin-bottom:24px">
+    <a class="btn primary" href="{TABLEAU}">Open on Tableau Public ↗</a>
+    <a class="btn" href="{WORKBOOK}" download>Download the workbook (.twbx)</a>
+  </div>
   <div class="card scroll embed">
     <iframe src="{TABLEAU}?:showVizHome=no&amp;:embed=y&amp;:toolbar=no&amp;:tabs=no"
       title="Retail customer segmentation dashboard on Tableau Public"
       loading="lazy"></iframe>
   </div>
+</section>
+
+<section id="contacts">
+  <h2>Who to contact first</h2>
+  <p class="say">{lapsed_customers:,} customers sit in <em>At Risk</em> or <em>Can't Lose Them</em>:
+  real historical spend, no recent order. Ranked by what they have actually spent, the top
+  {CONTACT_N} are where a retention budget goes first. This is the list the dashboard is built to
+  produce — a team can work from it on Monday.</p>
+  <div class="card scroll"><table>
+    <tr><th>Customer</th><th>Segment</th><th>Country</th><th class="num">Last order</th>
+        <th class="num">Orders</th><th class="num">Lifetime spend</th>
+        <th class="num">Modelled CLV</th></tr>
+    {contacts_html()}
+  </table></div>
 </section>
 
 <section id="segments">

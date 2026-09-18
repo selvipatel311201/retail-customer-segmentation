@@ -222,6 +222,7 @@
     <span class="mark">Retail Segmentation</span>
     <a href="#dashboard" class="hide-sm">Dashboard</a>
     <a href="#segments" class="hide-sm">Segments</a>
+    <a href="#contacts" class="hide-sm">Contacts</a>
     <a href="#retention" class="hide-sm">Retention</a>
     <a href="#actions" class="hide-sm">Actions</a>
     <a href="#method" class="hide-sm">Method</a>
@@ -299,12 +300,255 @@
   <h2>Interactive dashboard</h2>
   <p class="say">The same analysis published to Tableau Public: revenue and customer counts by
   segment, the cluster scatter, and a ranked contact list of the 829 high-value
-  customers who have stopped buying. <a href="https://public.tableau.com/app/profile/selvi.patel/viz/retail_17897602838350/RetailCustomerSegmentationLifetimeValue">Open it full size ↗</a></p>
+  customers who have stopped buying.</p>
+  <div class="cta" style="margin-bottom:24px">
+    <a class="btn primary" href="https://public.tableau.com/app/profile/selvi.patel/viz/retail_17897602838350/RetailCustomerSegmentationLifetimeValue">Open on Tableau Public ↗</a>
+    <a class="btn" href="retail-customer-segmentation.twbx" download>Download the workbook (.twbx)</a>
+  </div>
   <div class="card scroll embed">
     <iframe src="https://public.tableau.com/app/profile/selvi.patel/viz/retail_17897602838350/RetailCustomerSegmentationLifetimeValue?:showVizHome=no&amp;:embed=y&amp;:toolbar=no&amp;:tabs=no"
       title="Retail customer segmentation dashboard on Tableau Public"
       loading="lazy"></iframe>
   </div>
+</section>
+
+<section id="contacts">
+  <h2>Who to contact first</h2>
+  <p class="say">829 customers sit in <em>At Risk</em> or <em>Can't Lose Them</em>:
+  real historical spend, no recent order. Ranked by what they have actually spent, the top
+  25 are where a retention budget goes first. This is the list the dashboard is built to
+  produce — a team can work from it on Monday.</p>
+  <div class="card scroll"><table>
+    <tr><th>Customer</th><th>Segment</th><th>Country</th><th class="num">Last order</th>
+        <th class="num">Orders</th><th class="num">Lifetime spend</th>
+        <th class="num">Modelled CLV</th></tr>
+    
+        <tr>
+          <td class="seg">12346</td>
+          <td>At Risk</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">326 days</td>
+          <td class="num dim">3</td>
+          <td class="num strong">£77,353</td>
+          <td class="num">£13,073</td>
+        </tr>
+        <tr>
+          <td class="seg">16754</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">372 days</td>
+          <td class="num dim">29</td>
+          <td class="num strong">£65,500</td>
+          <td class="num">£11,173</td>
+        </tr>
+        <tr>
+          <td class="seg">13093</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">276 days</td>
+          <td class="num dim">55</td>
+          <td class="num strong">£54,144</td>
+          <td class="num">£8,057</td>
+        </tr>
+        <tr>
+          <td class="seg">17850</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">372 days</td>
+          <td class="num dim">155</td>
+          <td class="num strong">£51,209</td>
+          <td class="num">£7,629</td>
+        </tr>
+        <tr>
+          <td class="seg">15749</td>
+          <td>At Risk</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">235 days</td>
+          <td class="num dim">3</td>
+          <td class="num strong">£44,534</td>
+          <td class="num">£14,696</td>
+        </tr>
+        <tr>
+          <td class="seg">13902</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">Denmark</td>
+          <td class="num dim">632 days</td>
+          <td class="num dim">5</td>
+          <td class="num strong">£34,023</td>
+          <td class="num">£5,144</td>
+        </tr>
+        <tr>
+          <td class="seg">12482</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">Sweden</td>
+          <td class="num dim">576 days</td>
+          <td class="num dim">27</td>
+          <td class="num strong">£21,942</td>
+          <td class="num">£3,674</td>
+        </tr>
+        <tr>
+          <td class="seg">15808</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">306 days</td>
+          <td class="num dim">21</td>
+          <td class="num strong">£17,180</td>
+          <td class="num">£2,550</td>
+        </tr>
+        <tr>
+          <td class="seg">13564</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">354 days</td>
+          <td class="num dim">36</td>
+          <td class="num strong">£15,880</td>
+          <td class="num">£2,356</td>
+        </tr>
+        <tr>
+          <td class="seg">17448</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">529 days</td>
+          <td class="num dim">41</td>
+          <td class="num strong">£14,449</td>
+          <td class="num">£2,453</td>
+        </tr>
+        <tr>
+          <td class="seg">18087</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">291 days</td>
+          <td class="num dim">16</td>
+          <td class="num strong">£13,909</td>
+          <td class="num">£2,060</td>
+        </tr>
+        <tr>
+          <td class="seg">13952</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">218 days</td>
+          <td class="num dim">14</td>
+          <td class="num strong">£12,824</td>
+          <td class="num">£1,940</td>
+        </tr>
+        <tr>
+          <td class="seg">14134</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">383 days</td>
+          <td class="num dim">15</td>
+          <td class="num strong">£11,123</td>
+          <td class="num">£1,669</td>
+        </tr>
+        <tr>
+          <td class="seg">15032</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">256 days</td>
+          <td class="num dim">8</td>
+          <td class="num strong">£11,010</td>
+          <td class="num">£1,656</td>
+        </tr>
+        <tr>
+          <td class="seg">14028</td>
+          <td>At Risk</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">550 days</td>
+          <td class="num dim">3</td>
+          <td class="num strong">£10,396</td>
+          <td class="num">£2,069</td>
+        </tr>
+        <tr>
+          <td class="seg">14828</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">197 days</td>
+          <td class="num dim">13</td>
+          <td class="num strong">£9,839</td>
+          <td class="num">£1,469</td>
+        </tr>
+        <tr>
+          <td class="seg">17504</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">206 days</td>
+          <td class="num dim">18</td>
+          <td class="num strong">£9,490</td>
+          <td class="num">£1,552</td>
+        </tr>
+        <tr>
+          <td class="seg">14063</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">687 days</td>
+          <td class="num dim">7</td>
+          <td class="num strong">£9,472</td>
+          <td class="num">£1,421</td>
+        </tr>
+        <tr>
+          <td class="seg">14439</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">Greece</td>
+          <td class="num dim">320 days</td>
+          <td class="num dim">5</td>
+          <td class="num strong">£9,443</td>
+          <td class="num">£1,507</td>
+        </tr>
+        <tr>
+          <td class="seg">17230</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">264 days</td>
+          <td class="num dim">18</td>
+          <td class="num strong">£9,388</td>
+          <td class="num">£1,407</td>
+        </tr>
+        <tr>
+          <td class="seg">14160</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">610 days</td>
+          <td class="num dim">7</td>
+          <td class="num strong">£8,421</td>
+          <td class="num">£1,321</td>
+        </tr>
+        <tr>
+          <td class="seg">13206</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">400 days</td>
+          <td class="num dim">13</td>
+          <td class="num strong">£8,308</td>
+          <td class="num">£1,242</td>
+        </tr>
+        <tr>
+          <td class="seg">13715</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">281 days</td>
+          <td class="num dim">17</td>
+          <td class="num strong">£8,153</td>
+          <td class="num">£1,400</td>
+        </tr>
+        <tr>
+          <td class="seg">18231</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">192 days</td>
+          <td class="num dim">28</td>
+          <td class="num strong">£6,848</td>
+          <td class="num">£1,073</td>
+        </tr>
+        <tr>
+          <td class="seg">15413</td>
+          <td>Can't Lose Them</td>
+          <td class="dim">United Kingdom</td>
+          <td class="num dim">692 days</td>
+          <td class="num dim">5</td>
+          <td class="num strong">£6,799</td>
+          <td class="num">£1,008</td>
+        </tr>
+  </table></div>
 </section>
 
 <section id="segments">
