@@ -22,7 +22,8 @@ OUT = ROOT / "docs"
 # republishing under a new name changes the URL, and this is the one place
 # that has to be edited when it does.
 TABLEAU = ("https://public.tableau.com/app/profile/selvi.patel/viz/"
-           "retail_17897602838350/RetailCustomerSegmentationLifetimeValue")
+           "RetailCustomerSegmentation_17897634069680/"
+           "RetailCustomerSegmentationLifetimeValue")
 GITHUB = "https://github.com/selvipatel311201/retail-customer-segmentation"
 # The packaged workbook, served from this site so anyone with Tableau can open
 # the real thing rather than only the published render.
